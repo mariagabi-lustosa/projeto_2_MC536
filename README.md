@@ -10,4 +10,4 @@
 
 ### Modelagem Conceitual
 
-![Preview do Modelo por Grafos](/projeto_neo4.png)
+![Preview do Modelo por Grafos](/projeto_neo4j.png)
