@@ -1,4 +1,5 @@
 import neo4j
+from neo4j import GraphDatabase
 import argparse
 
 def create_and_fill_database(driver):
@@ -7,12 +8,9 @@ def create_and_fill_database(driver):
         driver: Neo4j driver to connect to the database.
     """
     
-    graph = """
+    commands = ["""
     LOAD CSV WITH HEADERS FROM 'file:///indicadores_educacao.csv' AS edu
     FIELDTERMINATOR ';'
-
-    WITH edu
-    LIMIT 300
 
     WITH edu, toInteger(edu.area_cod) AS area_cod, edu.nome_area_atuacao AS nome
     MERGE (area:AreaAtuacao {codigo: area_cod})
@@ -44,7 +42,9 @@ def create_and_fill_database(driver):
     MATCH (i:InstituicaoSuperior {codigo: toInteger(edu.inst_cod)})
     MATCH (u:UnidadeFederativa {sigla: edu.uf_sigla})
     MERGE (i)-[:LOCALIZADA_EM]->(u)
+    """,
 
+    """
     LOAD CSV WITH HEADERS FROM 'file:///rais_tabela4_joined.csv' AS rais4
     FIELDTERMINATOR ';'
 
@@ -57,7 +57,9 @@ def create_and_fill_database(driver):
 
     WITH rais4, rais4.setor_nome AS setor
     MERGE (:SetorEconomico {nome: setor})
+    """,
 
+    """
     LOAD CSV WITH HEADERS FROM 'file:///indicadores_educacao.csv' AS edu
     FIELDTERMINATOR ';'
 
@@ -65,36 +67,126 @@ def create_and_fill_database(driver):
     MATCH (mun:Municipio {codigo: municipio_cod})
     MATCH (c:Curso {codigo: toInteger(edu.curso_cod)})
     MERGE (c)-[:TRAJETORIA_DO_CURSO {ano: ano, ingressantes: ingressantes, concluintes: concluintes,taxa_desistencia: taxa_desistencia}]->(mun)
+    """,
 
+    """
     LOAD CSV WITH HEADERS FROM 'file:///rais_tabela6_joined.csv' AS rais6
     FIELDTERMINATOR ';'
 
-    WITH rais6
-    LIMIT 300
+    WITH rais6, rais6.uf_sigla AS uf, toFloat(rais6.media_remuneracao) AS media_remuneracao, rais6.ano AS ano
+    MERGE (med:MediaRemuneracao {media_remuneracao: media_remuneracao})
 
-    WITH rais6, rais6.uf_sigla AS uf, toFloat(rais6.media_renumeracao) AS media_renumeracao
+    WITH *
     MATCH (u:UnidadeFederativa {sigla: uf})
-    MATCH (setor:SetorEconomico {nome: rais6.setor_nome})
-    MERGE (setor)-[:RENUNERAÇÃO_MEDIA {media_renumeracao: media_renumeracao}]->(u)
+    MATCH (med:MediaRemuneracao {media_remuneracao: media_remuneracao})
+    MERGE (u)-[:MEDIA_REMUNERACAO_ANUAL {ano: ano}]->(med)
+    """,
 
+    """
     LOAD CSV WITH HEADERS FROM 'file:///rais_tabela4_joined.csv' AS rais4
     FIELDTERMINATOR ';'
 
-    WITH rais4, toInteger(rais4.municipio_cod) AS municipio_cod, toInteger(rais4.num_pessoas_empregadas) AS num_empregados, rais4.setor_nome AS setor
+    WITH rais4, toInteger(rais4.municipio_cod) AS municipio_cod, toInteger(rais4.num_pessoas_empregadas) AS num_empregados, rais4.setor_nome AS setor_nome
     MATCH (mun:Municipio {codigo: municipio_cod})
-    MATCH (setor:SetorEconomico {nome: setor})
+    MATCH (setor:SetorEconomico {nome: setor_nome})
     MERGE (setor)-[:NUMERO_PESSOAS_EMPREGADAS {num_empregados: num_empregados}]->(mun)
+    """,
+    
+    """
+    MATCH (a:AreaAtuacao {codigo: 1}), (s:SetorEconomico {nome: 'Serviços'})
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s)
+    """,
+
+    """
+    MATCH (a:AreaAtuacao {codigo: 2}), 
+    (s:SetorEconomico {nome: 'Serviços'})
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s)
+    """,
+
+    """
+    MATCH (a:AreaAtuacao {codigo: 3}),
+    (s:SetorEconomico {nome: 'Serviços'})
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s)
+    """,
+
+    """
+    MATCH (a:AreaAtuacao {codigo: 4}),
+    (s1:SetorEconomico {nome: 'Serviços'}),
+    (s2:SetorEconomico {nome: 'Comércio'})
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s1)
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s2)
+    """,
+
+    """
+    MATCH (a:AreaAtuacao {codigo: 5}),
+    (s1:SetorEconomico {nome: 'Serviços'}),
+    (s2:SetorEconomico {nome: 'Comércio'}),
+    (s3:SetorEconomico {nome: 'Indústria'})
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s1)
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s2)
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s3)
+    """,
+
+    """
+    MATCH (a:AreaAtuacao {codigo: 6}),
+    (s1:SetorEconomico {nome: 'Serviços'}),
+    (s2:SetorEconomico {nome: 'Comércio'}),
+    (s3:SetorEconomico {nome: 'Indústria'})
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s1)
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s2)
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s3)
+    """,
+
+    """
+    MATCH (a:AreaAtuacao {codigo: 7}),
+    (s1:SetorEconomico {nome: 'Agropecuária'}),
+    (s2:SetorEconomico {nome: 'Indústria'}),
+    (s3:SetorEconomico {nome: 'Construção'})
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s1)
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s2)
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s3)
+    """,
+
+    """
+    MATCH (a:AreaAtuacao {codigo: 8}),
+    (s1:SetorEconomico {nome: 'Agropecuária'}),
+    (s2:SetorEconomico {nome: 'Indústria'}),
+    (s3:SetorEconomico {nome: 'Serviços'})
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s1)
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s2)
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s3)
+    """,
+
+    """
+    MATCH (a:AreaAtuacao {codigo: 9}),
+    (s:SetorEconomico {nome: 'Serviços'})
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s)
+    """,
+
+    """
+    MATCH (a:AreaAtuacao {codigo: 10}),
+    (s1:SetorEconomico {nome: 'Serviços'}),
+    (s2:SetorEconomico {nome: 'Comércio'})
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s1)
+    MERGE (a)-[:ESTA_RELACIONADO_A]->(s2)
+    """
+    ]
+
+    for command in commands:
+        with driver.session() as session:
+            session.run(command)
+            print("Command executed successfully.")
 
 
-
+def main(create_bool):
     """ Main function to create the Neo4j database and schema.
 
     Args:
-        create_bool: Boolean to create the database and tables.
+        create_bool: Boolean to create the graph database.
     """
 
-    URL = "###" # Replace with your Neo4j database URL
-    auth = ("neo4j", "password")  # Replace with your Neo4j username and password
+    URL = "bolt://localhost:7687" # Replace with your Neo4j database URL
+    auth = ("neo4j", "12345678")  # Replace with your Neo4j username and password
     
     driver = neo4j.GraphDatabase.driver(
         uri = URL, 
@@ -102,7 +194,7 @@ def create_and_fill_database(driver):
     )
     
     if create_bool == "True":
-        create_database(driver)
+        create_and_fill_database(driver)
     
     driver.close()
     
