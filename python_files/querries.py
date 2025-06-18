@@ -26,7 +26,7 @@ QUERRIES = {
 # pode ajudar estudantes a escolher instituições em regiões com melhores perspectivas salariais.
 
 
-    "2. Cursos, instituições e remuneração média por estado (2023)": """
+    "2. Cursos, instituições e remuneração média por estado em 2023": """
         MATCH (c:Curso)-[:PERTENCE_A]->(i:InstituicaoSuperior)-[:LOCALIZADA_EM]->(u:UnidadeFederativa)
               -[r:MEDIA_REMUNERACAO_ANUAL {ano: 2023}]->(med:MediaRemuneracao)
         RETURN c.nome AS Curso, i.nome AS Instituicao, u.nome AS Estado, med.media_remuneracao AS Remuneracao
@@ -37,7 +37,7 @@ QUERRIES = {
 #Em quais áreas de formação os setores empregam mais pessoas em 2023? E onde?
 # Relaciona formação acadêmica, por area de atuacao, com a demanda do mercado local.
 
-    "3. Área → setor → município com mais empregos (2023)": """
+    "3. Área, depois setor, depois município com mais empregos em 2023": """
         MATCH (a:AreaAtuacao)-[:ESTA_RELACIONADO_A]->(s:SetorEconomico)
               -[r:NUMERO_PESSOAS_EMPREGADAS {ano: 2023}]->(m:Municipio)
         RETURN a.nome AS Area, s.nome AS Setor, m.nome AS Municipio, r.num_empregados AS Empregados
@@ -48,7 +48,7 @@ QUERRIES = {
 # QUERRIE 4
 # Quais cursos estão ligados a setores com maior remuneração média por estado em 2023?
 # Indica quais formações estão associadas a melhores salários regionais.
-    "4. Curso → área → setor → UF com maior remuneração (2023)": """
+    "4. Curso, depois área, depois setor, depois UF com maior remuneração em 2023": """
         MATCH (c:Curso)-[:PERTENCE_A]->(a:AreaAtuacao)-[:ESTA_RELACIONADO_A]->(s:SetorEconomico),
               (u:UnidadeFederativa)-[:MEDIA_REMUNERACAO_ANUAL {ano: 2023}]->(med:MediaRemuneracao)
         RETURN DISTINCT c.nome AS Curso, a.nome AS Area, s.nome AS Setor, u.nome AS Estado, med.media_remuneracao AS Remuneracao
@@ -71,7 +71,7 @@ QUERRIES = {
 # QUERRIE 6
 # Quais municípios mais empregaram em setores relacionados à Ciencia da Computacao em 2023?
 # Aponta cidades onde há maior demanda prática para cientistas da computacao.
-    "6. Top 10 municípios com mais empregos em setores de Ciencia da Computacao (2023)": """
+    "6. Top 10 municípios com mais empregos em setores de Ciencia da Computacao em 2023": """
         MATCH (c:Curso {nome: "Ciência da Computação"})-[:PERTENCE_A]->(a:AreaAtuacao)
       -[:ESTA_RELACIONADO_A]->(s:SetorEconomico)
       -[r:NUMERO_PESSOAS_EMPREGADAS {ano: 2023}]->(m:Municipio)
