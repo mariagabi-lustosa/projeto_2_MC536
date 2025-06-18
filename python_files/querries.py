@@ -78,7 +78,22 @@ QUERRIES = {
 RETURN m.nome AS Municipio, s.nome AS Setor, r.num_empregados AS Empregados
 ORDER BY Empregados DESC
 LIMIT 10
-    """
+    """,
+
+
+# QUERRIE 7
+# Investiga se há relação entre o salário médio no estado e o ingresso de alunos em cursos relacionados àquela área de atuação.
+# Cursos com maiores salários no estado atraem mais ingressantes naquele ano?
+
+    "7. Ano de entrada em cursos e a pretenção salarial do curso em uma UF": """
+        MATCH (c:Curso)-[:PERTENCE_A]->(i:InstituicaoSuperior)-[:LOCALIZADA_EM]->(uf:UnidadeFederativa),
+        (c)-[t:TRAJETORIA_DO_CURSO]->(m:Municipio),
+        (uf)-[r:MEDIA_REMUNERACAO_ANUAL]->(rem:MediaRemuneracao)
+    WHERE t.ano = r.ano
+    RETURN c.nome AS Curso, t.ano AS AnoIngresso, uf.nome AS Estado, t.ingressantes AS NumIngressantes, rem.media_remuneracao AS MediaSalarial
+    ORDER BY Curso, AnoIngresso
+    """,
+
 }
 
 # Função para executar as queries
