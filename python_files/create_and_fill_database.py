@@ -63,7 +63,7 @@ def create_and_fill_database(driver):
     LOAD CSV WITH HEADERS FROM 'file:///indicadores_educacao.csv' AS edu
     FIELDTERMINATOR ';'
 
-    WITH edu, toInteger(edu.municipio_cod) AS municipio_cod, edu.ano_referencia AS ano, edu.num_ingressantes AS ingressantes, edu.num_concluintes AS concluintes, edu.taxa_desistencia AS taxa_desistencia
+    WITH edu, toInteger(edu.municipio_cod) AS municipio_cod, toInteger(edu.ano_referencia) AS ano, edu.num_ingressantes AS ingressantes, edu.num_concluintes AS concluintes, edu.taxa_desistencia AS taxa_desistencia
     MATCH (mun:Municipio {codigo: municipio_cod})
     MATCH (c:Curso {codigo: toInteger(edu.curso_cod)})
     MERGE (c)-[:TRAJETORIA_DO_CURSO {ano: ano, ingressantes: ingressantes, concluintes: concluintes,taxa_desistencia: taxa_desistencia}]->(mun)
@@ -73,7 +73,7 @@ def create_and_fill_database(driver):
     LOAD CSV WITH HEADERS FROM 'file:///rais_tabela6_joined.csv' AS rais6
     FIELDTERMINATOR ';'
 
-    WITH rais6, rais6.uf_sigla AS uf, toFloat(rais6.media_remuneracao) AS media_remuneracao, rais6.ano AS ano
+    WITH rais6, rais6.uf_sigla AS uf, toFloat(rais6.media_remuneracao) AS media_remuneracao, toInteger(rais6.ano) AS ano
     MERGE (med:MediaRemuneracao {media_remuneracao: media_remuneracao})
 
     WITH *
@@ -86,10 +86,10 @@ def create_and_fill_database(driver):
     LOAD CSV WITH HEADERS FROM 'file:///rais_tabela4_joined.csv' AS rais4
     FIELDTERMINATOR ';'
 
-    WITH rais4, toInteger(rais4.municipio_cod) AS municipio_cod, toInteger(rais4.num_pessoas_empregadas) AS num_empregados, rais4.setor_nome AS setor_nome
+    WITH rais4, toInteger(rais4.municipio_cod) AS municipio_cod, toInteger(rais4.num_pessoas_empregadas) AS num_empregados, rais4.setor_nome AS setor_nome, toInteger(rais4.ano) AS ano
     MATCH (mun:Municipio {codigo: municipio_cod})
     MATCH (setor:SetorEconomico {nome: setor_nome})
-    MERGE (setor)-[:NUMERO_PESSOAS_EMPREGADAS {num_empregados: num_empregados}]->(mun)
+    MERGE (setor)-[:NUMERO_PESSOAS_EMPREGADAS {num_empregados: num_empregados, ano:ano}]->(mun)
     """,
     
     """
