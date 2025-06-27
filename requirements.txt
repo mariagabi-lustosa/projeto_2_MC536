@@ -1,0 +1,5 @@
+pandas==2.2.3
+numpy==2.2.5
+neo4j==5.28.1
+argparse==1.1
+rapidfuzz==3.13.0

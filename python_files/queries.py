@@ -87,8 +87,8 @@ QUERIES = {
     """,
 
     # QUERY 7
-    # Investiga se há relação entre o salário médio no estado e o ingresso de alunos em cursos relacionados àquela área de atuação.
     # Cursos com maiores salários no estado atraem mais ingressantes naquele ano?
+    # Investiga se há relação entre o salário médio no estado e o ingresso de alunos em cursos relacionados àquela área de atuação.
 
     "7. Ano de entrada em cursos e a pretenção salarial do curso em uma UF": """
         MATCH (c:Curso)-[:PERTENCE_A]->(i:InstituicaoSuperior)-[:LOCALIZADA_EM]->(uf:UnidadeFederativa),
@@ -101,7 +101,7 @@ QUERIES = {
 }
 
 # Função para executar as queries e salvar em CSV
-def run_QUERRIES(driver):
+def run_queries(driver):
     """Executes a series of predefined queries against a Neo4j database and saves the results to CSV files.
 
     Args:
@@ -116,7 +116,7 @@ def run_QUERRIES(driver):
 
             records = [dict(record) for record in result]
 
-            # Print to terminal (optional)
+            # Print to terminal
             for record in records:
                 print(record)
 
@@ -137,7 +137,7 @@ def main():
     """
     driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
     try:
-        run_QUERRIES(driver)
+        run_queries(driver)
     finally:
         driver.close()
 
