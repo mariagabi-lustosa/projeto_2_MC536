@@ -16,7 +16,6 @@ Flavia Juliana Ventilari dos Santos - RA: 260438
 - [Resultado das Queries](#resultado-das-queries)
 
 
-<<<<<<< HEAD
 ## 🎯 Objetivo do Projeto
 
 Este repositório contém o Projeto 2 desenvolvido para a disciplina MC536 – Banco de Dados da Unicamp (1º semestre de 2025). Ele é uma continuação e refatoração do [Projeto 1](https://github.com/mariagabi-lustosa/projeto_1_MC536/tree/main), no qual foi utilizada modelagem relacional em PostgreSQL.
