@@ -97,42 +97,41 @@ QUERIES = {
         WHERE t.ano = r.ano
         RETURN c.nome AS Curso, t.ano AS AnoIngresso, uf.nome AS Estado, t.ingressantes AS NumIngressantes, rem.media_remuneracao AS MediaSalarial
         ORDER BY Curso, AnoIngresso
+    """,
+
+
+    # QUERY do prj 1
+
+    # Investiga se estudantes desistem do curso baseado na queda de média salarial da UF
+
+        "8. Relação entre estados com queda na remuneração e taxa de desistência média dos cursos de graduação": """
+        MATCH (uf:UnidadeFederativa)
+        OPTIONAL MATCH (uf)-[r2020:MEDIA_REMUNERACAO_ANUAL {ano:2020}]->(rem2020:MediaRemuneracao)
+        OPTIONAL MATCH (uf)-[r2023:MEDIA_REMUNERACAO_ANUAL {ano:2023}]->(rem2023:MediaRemuneracao)
+        OPTIONAL MATCH (i:InstituicaoSuperior)-[:LOCALIZADA_EM]->(uf)
+        OPTIONAL MATCH (c:Curso)-[:PERTENCE_A]->(i)
+        OPTIONAL MATCH (c)-[tc2020:TRAJETORIA_DO_CURSO {ano:2020}]->(:Municipio)
+        OPTIONAL MATCH (c)-[tc2023:TRAJETORIA_DO_CURSO {ano:2023}]->(:Municipio)
+        WITH 
+            uf.nome AS Estado,
+            rem2020.media_remuneracao AS Remuneracao2020,
+            rem2023.media_remuneracao AS Remuneracao2023,
+            collect(tc2020.taxa_desistencia) AS Desistencias2020,
+            collect(tc2023.taxa_desistencia) AS Desistencias2023
+        WITH 
+            Estado,
+            Remuneracao2020,
+            Remuneracao2023,
+            CASE WHEN size(Desistencias2020) > 0 THEN avg([x IN Desistencias2020 WHERE x IS NOT NULL | toFloat(x)]) ELSE null END AS MediaDesistencia2020,
+            CASE WHEN size(Desistencias2023) > 0 THEN avg([x IN Desistencias2023 WHERE x IS NOT NULL | toFloat(x)]) ELSE null END AS MediaDesistencia2023
+        WITH 
+            Estado,
+            (MediaDesistencia2023 - MediaDesistencia2020) AS AumentoDesistencia,
+            (Remuneracao2023 - Remuneracao2020) AS VariacaoRemuneracao
+        WHERE AumentoDesistencia > 0 AND VariacaoRemuneracao < 0
+        RETURN Estado, round(AumentoDesistencia, 2) AS AumentoDesistencia, round(VariacaoRemuneracao, 2) AS VariacaoRemuneracao
+        ORDER BY AumentoDesistencia DESC
     """
-
-
-# QUERY do prj 1
-        "8. Relação entre estados com queda na remuneração e taxa de desistência média dos cursos de graduação":"""
-        WITH MediaRemuneracao AS (
-            SELECT 
-                UnidadeFederativa,
-                MAX(CASE WHEN ano = 2023 THEN media_remuneracao END) -
-                MIN(CASE WHEN ano = 2020 THEN media_remuneracao END) AS delta_remuneracao
-            FROM "Remuneracao_Media_Por_UF"
-            WHERE ano IN (2020, 2023)
-            GROUP BY UnidadeFederativa
-        ),
-        DesistenciaDelta AS (
-            SELECT 
-                i.UnidadeFederativa,
-                AVG(CASE WHEN tc.ano_referencia = 2023 THEN tc.taxa_desistencia END) -
-                AVG(CASE WHEN tc.ano_referencia = 2020 THEN tc.taxa_desistencia END) AS delta_desistencia
-            FROM "Trajetoria_Curso" tc
-            JOIN "Curso" c ON tc.curso_cod = c.curso_cod
-            JOIN "Instituicao_Superior" i ON c.inst_cod = i.inst_cod
-            WHERE tc.ano_referencia IN (2020, 2023)
-            GROUP BY i.UnidadeFederativa
-        )
-        SELECT 
-            uf.uf_nome,
-            ROUND(d.delta_desistencia, 2) AS aumento_desistencia,
-            ROUND(r.delta_remuneracao, 2) AS variacao_remuneracao
-        FROM DesistenciaDelta d
-        JOIN MediaRemuneracao r ON d.UnidadeFederativa = r.UnidadeFederativa
-        JOIN "Unidade_Federativa" uf ON uf.UnidadeFederativa = d.UnidadeFederativa
-        WHERE d.delta_desistencia > 0 AND r.delta_remuneracao < 0
-        ORDER BY d.delta_desistencia DESC;
-        """
-    
 }
 
 # Função para executar as queries e salvar em CSV
