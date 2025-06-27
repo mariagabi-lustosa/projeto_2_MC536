@@ -145,6 +145,3 @@ python python_files/queries.py
 
 ### 📄 Licença
 Este projeto é de uso acadêmico e está sujeito às diretrizes da disciplina MC536 da Unicamp oferecida no primeiro semestre de 2025.
-=======
-![Preview do Modelo por Grafos](/models/projeto_neo4j.svg)
->>>>>>> ab74b6afcc89e0cf01cc8f92ff062fa24088f492
