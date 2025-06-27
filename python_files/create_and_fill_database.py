@@ -93,7 +93,8 @@ def create_and_fill_database(driver):
     """,
     
     """
-    MATCH (a:AreaAtuacao {codigo: 1}), (s:SetorEconomico {nome: 'Serviços'})
+    MATCH (a:AreaAtuacao {codigo: 1}), 
+    (s:SetorEconomico {nome: 'Serviços'})
     MERGE (a)-[:ESTA_RELACIONADO_A]->(s)
     """,
 
