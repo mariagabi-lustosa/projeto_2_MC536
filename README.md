@@ -6,7 +6,7 @@ Gabriel Cabral Romero Oliveira - RA: 247700
 Flavia Juliana Ventilari dos Santos - RA: 260438     
 
 
-## Overview do Repositório
+## 🌎 Overview do Repositório
 - [Objetivo do Projeto](#objetivo-do-projeto)
 - [Modelos](#modelos)
 - [Datasets Utilizados](#datasets-utilizados)
@@ -20,12 +20,22 @@ Flavia Juliana Ventilari dos Santos - RA: 260438
 
 Este repositório contém o Projeto 2 desenvolvido para a disciplina MC536 – Banco de Dados da Unicamp (1º semestre de 2025). Ele é uma continuação e refatoração do [Projeto 1](https://github.com/mariagabi-lustosa/projeto_1_MC536/tree/main), no qual foi utilizada modelagem relacional em PostgreSQL.
 
-Neste segundo projeto, os dados foram reorganizados para um banco de dados orientado a grafos, utilizando o Neo4j. Essa mudança permitiu explorar relações mais complexas entre as entidades (como cursos, instituições, áreas de atuação e empregos), possibilitando análises mais sofisticadas e flexíveis.
+Neste segundo projeto, os dados foram reorganizados para um banco de dados orientado a grafos, utilizando o Neo4j. Essa mudança permitiu explorar relações mais complexas entre as entidades (como cursos, instituições, áreas de atuação e empregos), possibilitando análises mais eficientes e sofisticadas, que a modelagem relacional não permite representar.
+
+Houve a possibilidade de decidir entre três diferentes bancos de dados para realizar a refatoração indo do modelo relacional para um não relacional. Dentre MOngoDB, DuckDB e Neo4j, optamos pelo último. Isso se deu levando em consideração alguns aspectos:
+
+- **Forma de armazenamento de arquivos**: a organização dos dados em nós representando as entidades e arestas, os relacionamentos, é adequada ao cenário centrado em relacionamentos, os quais precisam ser modelados de forma eficiente. Uma vantagem da modelagem por grafos é justamente essa: geralmente conseguimos extrair informações mais relevantes das areas que dos nós.
+
+- **Linguagem de processamento de consultas**: o Neo4j usa a lingaugem Cypher, que é pensada para consultas em grafos. Sua sintaxe é adequada para percorrer caminhos e acessar relacionamentos complexos, o que é essencial para as queries propostas neste projeto, visto que envolvem conexões em vários níveis.
+
+- **Processamento e controle de transações**: há suporte à ACID (Atomicity, Consistency, Isolation, Durability), o que garante a integridade relacional das operações. Isso é importante para esse projeto, pois ele envolve a manipulação de dados interdependentes e sensíveis à consistência.
+
+- **Mecanismos de recuperação e segurança**: Neo4j tem suporte robusto a controle de acesso, logs transacionais e backups automáticos, além de funcionalidades específicas para auditoria e rastreamento de alterações nos dados.
 
 
 ## 🧠 Modelo
 
-### Modelo de Grafos (Neo4j)
+### Modelo Lógico de Grafos
 ![Modelo de Grafos](models/projeto_neo4j.svg)
 
 
@@ -142,5 +152,5 @@ python python_files/queries.py
 | `query_7_result.csv` | Conectividade entre instituições, áreas e remuneração |
 
 
-### 📄 Licença
+## 📄 Licença
 Este projeto é de uso acadêmico e está sujeito às diretrizes da disciplina MC536 da Unicamp oferecida no primeiro semestre de 2025.
