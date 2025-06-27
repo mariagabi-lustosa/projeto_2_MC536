@@ -98,6 +98,41 @@ QUERIES = {
         RETURN c.nome AS Curso, t.ano AS AnoIngresso, uf.nome AS Estado, t.ingressantes AS NumIngressantes, rem.media_remuneracao AS MediaSalarial
         ORDER BY Curso, AnoIngresso
     """
+
+
+# QUERY do prj 1
+        "8. Relação entre estados com queda na remuneração e taxa de desistência média dos cursos de graduação":"""
+        WITH MediaRemuneracao AS (
+            SELECT 
+                UnidadeFederativa,
+                MAX(CASE WHEN ano = 2023 THEN media_remuneracao END) -
+                MIN(CASE WHEN ano = 2020 THEN media_remuneracao END) AS delta_remuneracao
+            FROM "Remuneracao_Media_Por_UF"
+            WHERE ano IN (2020, 2023)
+            GROUP BY UnidadeFederativa
+        ),
+        DesistenciaDelta AS (
+            SELECT 
+                i.UnidadeFederativa,
+                AVG(CASE WHEN tc.ano_referencia = 2023 THEN tc.taxa_desistencia END) -
+                AVG(CASE WHEN tc.ano_referencia = 2020 THEN tc.taxa_desistencia END) AS delta_desistencia
+            FROM "Trajetoria_Curso" tc
+            JOIN "Curso" c ON tc.curso_cod = c.curso_cod
+            JOIN "Instituicao_Superior" i ON c.inst_cod = i.inst_cod
+            WHERE tc.ano_referencia IN (2020, 2023)
+            GROUP BY i.UnidadeFederativa
+        )
+        SELECT 
+            uf.uf_nome,
+            ROUND(d.delta_desistencia, 2) AS aumento_desistencia,
+            ROUND(r.delta_remuneracao, 2) AS variacao_remuneracao
+        FROM DesistenciaDelta d
+        JOIN MediaRemuneracao r ON d.UnidadeFederativa = r.UnidadeFederativa
+        JOIN "Unidade_Federativa" uf ON uf.UnidadeFederativa = d.UnidadeFederativa
+        WHERE d.delta_desistencia > 0 AND r.delta_remuneracao < 0
+        ORDER BY d.delta_desistencia DESC;
+        """
+    
 }
 
 # Função para executar as queries e salvar em CSV
