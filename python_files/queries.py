@@ -66,30 +66,12 @@ QUERIES = {
         LIMIT 1000
     """,
 
+
     # QUERY 5
-    # Cursos com maiores salários no estado atraem mais ingressantes naquele ano?
-    # Investiga se há relação entre o salário médio no estado e o ingresso de alunos em cursos relacionados àquela área de atuação.
-
-    "5. Ano de entrada em cursos e a pretenção salarial do curso em uma UF": """
-        MATCH (c:Curso)-[:PERTENCE_A]->(i:InstituicaoSuperior)-[:LOCALIZADA_EM]->(uf:UnidadeFederativa), (c)-[t:TRAJETORIA_DO_CURSO {ano: 2022}]->(:Municipio), (uf)-[r:MEDIA_REMUNERACAO_ANUAL {ano: 2022}]->(rem:MediaRemuneracao)
-        WITH 
-            c.nome AS Curso,
-            uf.nome AS Estado,
-            sum(toInteger(t.ingressantes)) AS NumIngressantes,
-            avg(toFloat(rem.media_remuneracao)) AS MediaSalarial
-        RETURN 
-            Curso,
-            Estado,
-            NumIngressantes,
-            round(MediaSalarial, 2) AS MediaSalarial
-        ORDER BY Estado, NumIngressantes DESC;
-    """,
-
-    # QUERY 6
     # Qual a relação entre estados que tiveram queda na remuneração média e o aumento da taxa de desistência dos cursos de graduação?
     # Ajuda a entender se a diminuição da remuneração média está correlacionada com o aumento da taxa de desistência dos cursos.
 
-    "6. Relação entre estados com queda na remuneração e taxa de desistência média dos cursos de graduação": """
+    "5. Relação entre estados com queda na remuneração e taxa de desistência média dos cursos de graduação": """
         MATCH (uf:UnidadeFederativa)
         MATCH (uf)-[:MEDIA_REMUNERACAO_ANUAL {ano: 2020}]->(rem2020:MediaRemuneracao), (uf)-[:MEDIA_REMUNERACAO_ANUAL {ano: 2023}]->(rem2023:MediaRemuneracao)
         

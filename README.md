@@ -77,9 +77,7 @@ Este projeto utiliza dados provenientes de duas principais fontes públicas naci
 │   ├── query_2_result.csv
 │   ├── query_3_result.csv
 │   ├── query_4_result.csv
-│   ├── query_5_result.csv
-│   ├── query_6_result.csv
-│   └── query_7_result.csv
+│   └── query_5_result.csv
 ├── requirements.txt
 └── README.md
 ```
@@ -143,13 +141,11 @@ python python_files/queries.py
 
 | Query | Descrição |
 |-------|-----------|
-| `query_1_result.csv` | Relações entre cursos e áreas de atuação com maiores ofertas de emprego |
-| `query_2_result.csv` | Instituições com maior proporção de concluintes em áreas em ascensão |
-| `query_3_result.csv` | Relações entre municípios e áreas com melhor remuneração |
-| `query_4_result.csv` | Comparação entre anos de variação de remuneração por UF |
-| `query_5_result.csv` | Percurso educacional típico de um estudante até o mercado |
-| `query_6_result.csv` | Relações entre cursos e evasão com contexto de mercado |
-| `query_7_result.csv` | Conectividade entre instituições, áreas e remuneração |
+| `query_1_result.csv` <br> No setor de agrupecuária, quais instituições oferecem cursos em áreas de atuação relacionadas a ele e qual o número de pessoas empregadas neste setor em cada município? | Identifica regiões com maior empregabilidade para alunos de determinada área
+| `query_2_result.csv` <br> procurando por um curso específico, buscamos quais são as instituições que oferecem-no e qual a média de remuneração do estado no qual ela está localizada | Pode ajudar estudantes a escolher instituições em regiões com melhores perspectivas salariais, caso esse seja o objetivo. Saber a média salarial do estado como um todo é interessante pois muitas vezes as pessoas são graduadas em uma área e acabam migrando para outra ao se formarem ou ao longo da vida |
+| `query_3_result.csv` <br>  Em quais áreas de atuação os setores empregaram mais pessoas em 2023 no estado de São Paulo, com exceção de sua capital | Relaciona formação acadêmica por área de atuação com a demanda do mercado local |
+| `query_4_result.csv` <br> Quais cursos têm mais evasão nas instituições e de quais estados? | Ajuda a identificar cursos críticos com alta evasão |
+| `query_5_result.csv` <br> Qual a relação entre estados que tiveram queda na remuneração média e o aumento da taxa de desistência dos cursos de graduação? | Ajuda a entender se a diminuição da remuneração média está correlacionada com o aumento da taxa de desistência dos cursos |
 
 
 ## 📄 Licença
